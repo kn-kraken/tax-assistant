@@ -1,19 +1,3 @@
-import { CoreMessage } from 'ai'
-
-export type Message = CoreMessage & {
-  id: string
-}
-
-export interface Chat extends Record<string, any> {
-  id: string
-  title: string
-  createdAt: Date
-  userId: string
-  path: string
-  messages: Message[]
-  sharePath?: string
-}
-
 export type ServerActionResult<Result> = Promise<
   | Result
   | {
@@ -25,6 +9,7 @@ export interface Session {
   user: {
     id: string
     email: string
+    name: string
   }
 }
 
@@ -38,4 +23,35 @@ export interface User extends Record<string, any> {
   email: string
   password: string
   salt: string
+}
+
+export type Ok<T> = { type: 'ok'; data: T }
+
+export type Error = { type: 'error'; message: string }
+
+export type Result<T> = Ok<T> | Error
+
+export type Author = 'user' | 'bot'
+
+export interface MessageText {
+  type: 'text'
+  content: string
+  timestamp: Date
+  author: Author
+}
+
+export interface MessageFile {
+  type: 'file'
+  content: Buffer
+  timestamp: Date
+  author: Author
+}
+
+export type Message = MessageText | MessageFile
+
+export type Chat = {
+  userId: string
+  id: string
+  name: string
+  messages: Message[]
 }

@@ -26,8 +26,9 @@ interface SidebarItemProps {
 
 export function SidebarItem({ index, chat, children }: SidebarItemProps) {
   const pathname = usePathname()
+  const chatPath = `/chat/${chat.id}`
 
-  const isActive = pathname === chat.path
+  const isActive = pathname === chatPath
   const [newChatId, setNewChatId] = useLocalStorage('newChatId', null)
   const shouldAnimate = index === 0 && isActive && newChatId
 
@@ -53,23 +54,9 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
         ease: 'easeIn'
       }}
     >
-      <div className="absolute left-2 top-1 flex size-6 items-center justify-center">
-        {chat.sharePath ? (
-          <Tooltip delayDuration={1000}>
-            <TooltipTrigger
-              tabIndex={-1}
-              className="focus:bg-muted focus:ring-1 focus:ring-ring"
-            >
-              <IconUsers className="mr-2 mt-1 text-zinc-500" />
-            </TooltipTrigger>
-            <TooltipContent>This is a shared chat.</TooltipContent>
-          </Tooltip>
-        ) : (
-          <IconMessage className="mr-2 mt-1 text-zinc-500" />
-        )}
-      </div>
+      <div className="absolute left-2 top-1 flex size-6 items-center justify-center"></div>
       <Link
-        href={chat.path}
+        href={chatPath}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',
@@ -78,11 +65,11 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
       >
         <div
           className="relative max-h-5 flex-1 select-none overflow-hidden text-ellipsis break-all"
-          title={chat.title}
+          title={chat.name}
         >
           <span className="whitespace-nowrap">
             {shouldAnimate ? (
-              chat.title.split('').map((character, index) => (
+              chat.name.split('').map((character, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -104,7 +91,8 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                     staggerChildren: 0.05
                   }}
                   onAnimationComplete={() => {
-                    if (index === chat.title.length - 1) {
+                    if (index === chat.name.length - 1) {
+                      console.log('XD')
                       setNewChatId(null)
                     }
                   }}
@@ -113,7 +101,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
                 </motion.span>
               ))
             ) : (
-              <span>{chat.title}</span>
+              <span>{chat.name}</span>
             )}
           </span>
         </div>

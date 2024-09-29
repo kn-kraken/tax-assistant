@@ -6,7 +6,6 @@ import Textarea from 'react-textarea-autosize'
 import { useActions, useUIState } from 'ai/rsc'
 
 import { UserMessage } from './stocks/message'
-import { type AI } from '@/lib/chat/actions'
 import { Button } from '@/components/ui/button'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
 import {
@@ -17,6 +16,8 @@ import {
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { nanoid } from 'nanoid'
 import { useRouter } from 'next/navigation'
+import { useMessageQueue } from '@/contexts/messages.context'
+import { addMessageDB } from '@/app/actions'
 
 export function PromptForm({
   input,
@@ -28,8 +29,8 @@ export function PromptForm({
   const router = useRouter()
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
-  const { submitUserMessage } = useActions()
-  const [_, setMessages] = useUIState<typeof AI>()
+  const { addMessage, submitMessage, isMsgSubmitting, addMessageToDB } =
+    useMessageQueue()
 
   React.useEffect(() => {
     if (inputRef.current) {
@@ -43,6 +44,8 @@ export function PromptForm({
       onSubmit={async (e: any) => {
         e.preventDefault()
 
+        if (isMsgSubmitting) return
+
         // Blur focus on mobile
         if (window.innerWidth < 600) {
           e.target['message']?.blur()
@@ -52,18 +55,19 @@ export function PromptForm({
         setInput('')
         if (!value) return
 
-        // Optimistically add user message UI
-        setMessages(currentMessages => [
-          ...currentMessages,
-          {
-            id: nanoid(),
-            display: <UserMessage>{value}</UserMessage>
-          }
-        ])
+        addMessage({
+          id: new Date().toString(),
+          display: <UserMessage>{value}</UserMessage>
+        })
 
-        // Submit and get response message
-        const responseMessage = await submitUserMessage(value)
-        setMessages(currentMessages => [...currentMessages, responseMessage])
+        addMessageToDB({
+          type: 'text',
+          content: value,
+          timestamp: new Date(),
+          author: 'user'
+        })
+
+        await submitMessage(value)
       }}
     >
       <div className="relative flex max-h-60 w-full grow flex-col overflow-hidden bg-background px-8 sm:rounded-md sm:border sm:px-12">
@@ -101,7 +105,11 @@ export function PromptForm({
         <div className="absolute right-0 top-[13px] sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button type="submit" size="icon" disabled={input === ''}>
+              <Button
+                type="submit"
+                size="icon"
+                disabled={input === '' || isMsgSubmitting}
+              >
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>
               </Button>

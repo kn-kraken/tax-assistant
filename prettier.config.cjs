@@ -7,6 +7,7 @@ module.exports = {
   arrowParens: 'avoid',
   tabWidth: 2,
   trailingComma: 'none',
+  formatOnSave: true,
   importOrder: [
     '^(react/(.*)$)|^(react$)',
     '^(next/(.*)$)|^(next$)',

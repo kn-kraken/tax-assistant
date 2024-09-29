@@ -56,11 +56,7 @@ export function ClearHistory({
               event.preventDefault()
               startTransition(async () => {
                 const result = await clearChats()
-                if (result && 'error' in result) {
-                  toast.error(result.error)
-                  return
-                }
-
+                toast.success('Cleared all chats')
                 setOpen(false)
               })
             }}

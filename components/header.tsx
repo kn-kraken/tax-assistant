@@ -2,7 +2,7 @@ import * as React from 'react'
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
-import { auth } from '@/auth'
+import { auth, signIn } from '@/auth'
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
   IconGitHub,
@@ -15,9 +15,23 @@ import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
 import { Session } from '@/lib/types'
+import SignInBtn from './signin-btn'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 async function UserOrLogin() {
   const session = (await auth()) as Session
+  async function onSubmit(e: any) {
+    'use server'
+
+    await signIn('credentials', {
+      email: 'test',
+      password: 'test',
+      redirect: false
+    })
+    redirect('/')
+  }
+
   return (
     <>
       {session?.user ? (
@@ -38,9 +52,11 @@ async function UserOrLogin() {
         {session?.user ? (
           <UserMenu user={session.user} />
         ) : (
-          <Button variant="link" asChild className="-ml-2">
-            <Link href="/login">Login</Link>
-          </Button>
+          <form action={onSubmit}>
+            <Button type="submit" variant="link" className="-ml-2">
+              Log In
+            </Button>
+          </form>
         )}
       </div>
     </>

@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from 'clsx'
 import { customAlphabet } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
+import { BotCard, BotMessage, SystemMessage } from '@/components/stocks'
+import { Message, Result } from './types'
+import { UserMessage } from '@/components/stocks/message'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -131,4 +134,16 @@ export function subMonths(date: Date, amount: number) {
   const newDate: Date = new Date(date)
   newDate.setMonth(newDate.getMonth() - amount)
   return newDate
+}
+
+export const parseResponseMessage = (msg: Message) => {
+  if (msg.type === 'text') {
+    if (msg.author === 'bot') {
+      return <BotCard>{msg.content}</BotCard>
+    } else {
+      return <UserMessage>{msg.content}</UserMessage>
+    }
+  }
+
+  return <SystemMessage>Server error. Refresh page.</SystemMessage>
 }
