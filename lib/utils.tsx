@@ -77,17 +77,17 @@ export enum ResultCode {
 export const getMessageFromCode = (resultCode: string) => {
   switch (resultCode) {
     case ResultCode.InvalidCredentials:
-      return 'Invalid credentials!'
+      return 'Nieprawidłowe dane logowania!'
     case ResultCode.InvalidSubmission:
-      return 'Invalid submission, please try again!'
+      return 'Nieprawidłowe zgłoszenie, spróbuj ponownie!'
     case ResultCode.UserAlreadyExists:
-      return 'User already exists, please log in!'
+      return 'Użytkownik już istnieje, zaloguj się!'
     case ResultCode.UserCreated:
-      return 'User created, welcome!'
+      return 'Użytkownik utworzony, witamy!'
     case ResultCode.UnknownError:
-      return 'Something went wrong, please try again!'
+      return 'Coś poszło nie tak, spróbuj ponownie!'
     case ResultCode.UserLoggedIn:
-      return 'Logged in!'
+      return 'Zalogowano!'
   }
 }
 
@@ -145,5 +145,5 @@ export const parseResponseMessage = (msg: Message) => {
     }
   }
 
-  return <SystemMessage>Server error. Refresh page.</SystemMessage>
+  ;<SystemMessage>Błąd serwera. Odśwież stronę.</SystemMessage>
 }

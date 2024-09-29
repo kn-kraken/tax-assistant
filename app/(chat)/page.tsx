@@ -6,7 +6,7 @@ import { getMissingKeys } from '@/app/actions'
 import { MessageQueueProvider } from '../../contexts/messages.context'
 
 export const metadata = {
-  title: 'Next.js AI Chatbot'
+  title: 'TaxAssistant'
 }
 
 export default async function IndexPage() {
